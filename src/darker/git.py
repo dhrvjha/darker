@@ -12,6 +12,7 @@ from subprocess import DEVNULL, PIPE, CalledProcessError, check_output, run  # n
 from typing import Dict, Iterable, List, Set, Tuple
 
 from darker.diff import diff_and_get_opcodes, opcodes_to_edit_linenums
+from darker.multiline_strings import get_multiline_string_ranges
 from darker.utils import GIT_DATEFORMAT, TextDocument
 
 logger = logging.getLogger(__name__)
@@ -366,7 +367,12 @@ class EditedLinenumsDiffer:
     def revision_vs_lines(
         self, path_in_repo: Path, content: TextDocument, context_lines: int
     ) -> List[int]:
-        """For file `path_in_repo`, return changed line numbers from given revision
+        """For changed line numbers between the given revision and given text content
+
+        The revision range was provided when this `EditedLinenumsDiffer` object was
+        created. Content for the given `path_in_repo` at `rev1` of that revision is
+        taken from the Git repository, and the provided text content is compared against
+        that historical version.
 
         :param path_in_repo: Path of the file to compare, relative to repository root
         :param content: The contents to compare to, e.g. from current working tree
@@ -376,4 +382,9 @@ class EditedLinenumsDiffer:
         """
         old = git_get_content_at_revision(path_in_repo, self.revrange.rev1, self.root)
         edited_opcodes = diff_and_get_opcodes(old, content)
-        return list(opcodes_to_edit_linenums(edited_opcodes, context_lines))
+        multiline_string_ranges = get_multiline_string_ranges(content)
+        return list(
+            opcodes_to_edit_linenums(
+                edited_opcodes, context_lines, multiline_string_ranges
+            )
+        )
