@@ -5,6 +5,7 @@
 # versions in `setup.cfg`.
 bandit==1.7.1
 black==21.8b0
+blue==0.8.0
 codespell==2.1.0
 flake8-2020==1.6.1
 flake8-bugbear==22.1.11
