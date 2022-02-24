@@ -10,6 +10,8 @@ Added
 - Document VSCode and ``--lint``/``-L`` incompatibility in the README.
 - Guard against breaking changes in ``isort`` by testing against its ``main``
   branch in the ``test-future`` GitHub Workflow.
+- Sort imports only if the range of modified lines overlaps with changes resulting from
+  sorting the imports.
 
 Fixed
 -----
